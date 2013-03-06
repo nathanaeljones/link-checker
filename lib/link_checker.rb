@@ -25,6 +25,11 @@ class LinkChecker
     @return_code = 0
 
     @options[:max_threads] ||= 4
+    
+    if @options[:no_ssl_verify] 
+      require 'openssl'
+      OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+    end 
   end
 
   # Find a list of HTML files in the @target path, which was set in the {#initialize} method.
