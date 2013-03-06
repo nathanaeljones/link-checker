@@ -28,7 +28,7 @@ class LinkChecker
     
     if @options[:no_ssl_verify] 
       require 'openssl'
-      OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+      OpenSSL::SSL::VERIFY_PEER.replace OpenSSL::SSL::VERIFY_NONE
     end 
   end
 
