@@ -7,6 +7,8 @@ options = Trollop::options do
 	opt :no_warnings, "Don't warn about redirects to valid links"
 	opt :warnings_are_errors, "Treat any warning as an error and produce an error return code"
 	opt :max_threads, "The maximum number of threads to start.", :default => 100
+	opt :no_ssl_verify, "Disable SSL certificate verification"
+	opt :skip_external, "Skip external link verification (only verify domain-local URLs)"
 end
 
 exit LinkChecker.new(:options => options, :target => ARGV[0]).check_uris
