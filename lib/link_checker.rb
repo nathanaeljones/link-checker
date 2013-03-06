@@ -50,6 +50,16 @@ class LinkChecker
     }.map{|link| link.attributes['href'].value }
   end
 
+  def self.get_uri_strings(content,uri)
+    Nokogiri::HTML(content).css('a').select { 
+      |link| !link.attribute('href').nil?  }.map{
+      |link| link.attributes['href'].value }.reject{ 
+      |path| @options[:skip_external] && path =~ /^https?\:\/\// }.map{ 
+      |path| path =~ /^https?\:\/\// ? path : URI.parse(uri) + path }
+  end
+
+
+
   # Check one URL.
   #
   # @param uri [URI] A URI object for the target URL.
@@ -149,11 +159,11 @@ class LinkChecker
   # @param source [String] The contents of the HTML page, as a string.
   # @param source_name [String] The name of the source, which will be reported if
   # there is an error or a warning.
-  def check_page(page, page_name)
+  def check_page(page, page_uri)
     Thread.new do
       threads = []
       results = []
-      self.class.external_link_uri_strings(page).each do |uri_string|
+      self.class.get_uri_strings(page, page_uri).each do |uri_string|
         Thread.exclusive { @links << page }
         wait_to_spawn_thread
         threads << Thread.new do
@@ -169,7 +179,7 @@ class LinkChecker
         end
       end
       threads.each {|thread| thread.join }
-      report_results(page_name, results)
+      report_results(page_uri, results)
     end
   end
   
